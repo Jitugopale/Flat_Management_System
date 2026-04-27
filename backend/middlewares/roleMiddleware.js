@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const roleMiddleware = async (...allowedRoles) => {
+export const roleMiddleware = (...allowedRoles) => {
   return (req, res, next) => {
     try {
       const userRole = req.user.role;

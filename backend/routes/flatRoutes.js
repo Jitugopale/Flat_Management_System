@@ -5,9 +5,9 @@ import fs from "fs"
 // multer → used to handle file uploads (images in your case)
 // path → helps create proper folder paths (works on all OS)
 // fs → file system module (used to create folders)
-import { file } from "zod";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
 import { createFlatController, getApprovedFlatsController, getUserFlatsController } from "../controllers/flatController.js";
+import { roleMiddleware } from "../middlewares/roleMiddleware.js";
 
 
 const flatRouter = express.Router();
@@ -51,7 +51,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage,limits:{fileSize:5*1024*1024}});
 // Creates the final upload middleware using the storage config above. Max file size = 5MB (5 * 1024 * 1024 bytes).Rejects anything larger.
 //End result: Each user's uploads go to their own folder → uploads/{userId}/images/1714200000-583920174.jpg
-flatRouter.post('/createFlat',authMiddleware,upload.array("images",5),createFlatController)
+flatRouter.post('/createFlat',authMiddleware,roleMiddleware("USER"),upload.array("images",5),createFlatController)
 //upload.array("images", 5) is a multer middleware that:
                                                                                                                      
   //┌──────────┬─────────────────────────────────────────────┐                                                             
