@@ -79,3 +79,38 @@ export const rejectFlatController = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getSoldFlatsController = async (req, res) => {
+  try {
+    const flat = await prismaClient.flat.findMany({
+      where: { status: "sold" },
+      orderBy: { sold_date: "desc" },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            address: true,
+            phoneNo: true,
+          },
+        },
+        soldTo: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            address: true,
+            phoneNo: true,
+          },
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ message: "Sucessfully Fetched Sold Flats", flat });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};

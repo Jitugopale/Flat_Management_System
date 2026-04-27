@@ -31,6 +31,8 @@ model User {
 
   flats Flat[] @relation("UserFlatsOwned")
   purchasedFlats    Flat[]    @relation("UserFlatsBought")
+  enquiriesSent     Enquiry[] @relation("BuyerEnquiries")
+  enquiriesReceived Enquiry[] @relation("SellerEnquiries")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -62,6 +64,30 @@ model Flat {
 
   owner     User      @relation("UserFlatsOwned", fields: [user_id], references: [id])
   soldTo    User?     @relation("UserFlatsBought", fields: [sold_to_user_id], references: [id])
+  enquiries Enquiry[]
 
   @@map("flats")
+}
+
+enum EnquiryStatus {
+  sent
+  received
+  read
+}
+
+model Enquiry {
+  id         Int           @id @default(autoincrement())
+  flat_id    Int
+  buyer_id   Int
+  seller_id  Int
+  message    String
+  status     EnquiryStatus @default(sent)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
+
+  flat   Flat @relation(fields: [flat_id], references: [id])
+  buyer  User @relation("BuyerEnquiries", fields: [buyer_id], references: [id])
+  seller User @relation("SellerEnquiries", fields: [seller_id], references: [id])
+
+  @@map("enquiries")
 }
