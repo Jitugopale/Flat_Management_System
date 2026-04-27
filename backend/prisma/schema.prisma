@@ -29,8 +29,39 @@ model User {
   address  String
   pincode  String
 
+  flats Flat[] @relation("UserFlatsOwned")
+  purchasedFlats    Flat[]    @relation("UserFlatsBought")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("users")
+}
+
+enum FlatStatus {
+  pending
+  approved
+  rejected
+  sold
+}
+model Flat {
+  id              Int        @id @default(autoincrement())
+  user_id         Int
+  title           String
+  address         String
+  price           Float
+  description     String?
+  images          Json? // store array of image URLs
+  amenities       Json? // store array of amenities like ["Gym","Parking"]
+  status          FlatStatus @default(pending)
+  sold_to_user_id Int? // optional buyer id if sold
+  sold_date       DateTime?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  owner     User      @relation("UserFlatsOwned", fields: [user_id], references: [id])
+  soldTo    User?     @relation("UserFlatsBought", fields: [sold_to_user_id], references: [id])
+
+  @@map("flats")
 }
