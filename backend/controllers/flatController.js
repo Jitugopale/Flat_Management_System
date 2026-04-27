@@ -111,3 +111,14 @@ export const getApprovedFlatsController = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const getUserFlatsController = async (req, res) => {
+  const userId = req.user.id;
+
+  const flats = await prismaClient.flat.findMany({
+    where: { user_id: userId },
+    orderBy: { created_at: "desc" },
+  });
+
+  return res.status(200).json({ message: "Fetch Flats Sucessfully", flats });
+};

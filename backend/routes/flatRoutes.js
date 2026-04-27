@@ -7,7 +7,7 @@ import fs from "fs"
 // fs → file system module (used to create folders)
 import { file } from "zod";
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { createFlatController, getApprovedFlatsController } from "../controllers/flatController.js";
+import { createFlatController, getApprovedFlatsController, getUserFlatsController } from "../controllers/flatController.js";
 
 
 const flatRouter = express.Router();
@@ -66,7 +66,8 @@ flatRouter.post('/createFlat',authMiddleware,upload.array("images",5),createFlat
   //│ 5        │ Max 5 files allowed per request             │
   //└──────────┴─────────────────────────────────────────────┘
 
-  flatRouter.get('/getApprove',getApprovedFlatsController)
+  flatRouter.get('/getApprove',getApprovedFlatsController);
+  flatRouter.get('/getFlats',authMiddleware,getUserFlatsController);
 
 
 export default flatRouter;
