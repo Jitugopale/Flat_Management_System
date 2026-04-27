@@ -12,23 +12,23 @@ export const createFlatController = async (req, res) => {
     }
 
     if (!req.files || req.files.length === 0) {
-    //if (!req.files || req.files.length === 0)                                                                              
-   
-  //┌────────────────────────┬─────────────────────────────────────────────────────────────┐                               
-  //│       Condition        │                           Meaning                           │
-  //├────────────────────────┼─────────────────────────────────────────────────────────────┤
-  //│ !req.files             │ req.files is undefined or null — no files field sent at all │
-  //├────────────────────────┼─────────────────────────────────────────────────────────────┤
-  //│ req.files.length === 0 │ Field was sent but empty — 0 files attached                 │
-  //└────────────────────────┴─────────────────────────────────────────────────────────────┘
+      //if (!req.files || req.files.length === 0)
+
+      //┌────────────────────────┬─────────────────────────────────────────────────────────────┐
+      //│       Condition        │                           Meaning                           │
+      //├────────────────────────┼─────────────────────────────────────────────────────────────┤
+      //│ !req.files             │ req.files is undefined or null — no files field sent at all │
+      //├────────────────────────┼─────────────────────────────────────────────────────────────┤
+      //│ req.files.length === 0 │ Field was sent but empty — 0 files attached                 │
+      //└────────────────────────┴─────────────────────────────────────────────────────────────┘
       return res
         .status(400)
         .json({ message: "please upload at least one image" });
     }
 
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-    //Express reads it from the incoming HTTP request:                                                                                                                                                                                           
-    //Client sends:  http://localhost:3000/api/flats                                                                         
+    //Express reads it from the incoming HTTP request:
+    //Client sends:  http://localhost:3000/api/flats
     //Express sets req.protocol = "http"
 
     //req.get() is just a helper to read any request header
@@ -39,20 +39,20 @@ export const createFlatController = async (req, res) => {
     // Express reads it via:
     // req.get("host")  // → "localhost:3000"
 
-        //To build full image URLs to store in DB:
-        // instead of storing just:
-        //"uploads/42/images/1714200000.jpg"
+    //To build full image URLs to store in DB:
+    // instead of storing just:
+    //"uploads/42/images/1714200000.jpg"
 
-        // you store the full accessible URL:
-        //"http://localhost:3000/uploads/42/images/1714200000.jpg"
+    // you store the full accessible URL:
+    //"http://localhost:3000/uploads/42/images/1714200000.jpg"
 
     const images = req.files.map(
       (f) => `${baseUrl}/uploads/${userId}/images/${f.filename}`,
     );
     //.map() loops over every uploaded file and converts it into a full URL string.
     //  Simple answer: Takes the array of uploaded files → returns array of full image URLs ready to store in the database.
-    
-    // array of uploaded files :                                              
+
+    // array of uploaded files :
     //   Example:
     //   req.files after upload:
     //   [
@@ -84,6 +84,30 @@ export const createFlatController = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const getApprovedFlatsController = async (req, res) => {
+  try {
+    const flats = await prismaClient.flat.findMany({
+      where: { status: "approved" },
+      orderBy: { created_at: "desc" },
+      include: {
+        owner: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            address: true,
+            phoneNo: true,
+          },
+        },
+      },
+    });
+
+    return res.status(200).json({ message: "Fetch all approved flats", flats });
+  } catch (error) {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
