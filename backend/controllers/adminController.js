@@ -52,3 +52,30 @@ export const approveFlatController = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
+
+export const rejectFlatController = async (req, res) => {
+  try {
+    const flatId = Number(req.params.id);
+
+    const flat = await prismaClient.flat.findUnique({
+      where: {
+        id: flatId,
+      },
+    });
+
+    if (!flat) {
+      return res.status(404).json({
+        message: "flat not found",
+      });
+    }
+    const rejectFlat = await prismaClient.flat.update({
+      where: { id: flatId },
+      data: { status: "rejected" },
+    });
+    return res
+      .status(200)
+      .json({ message: "Flat Rejected Sucessfully", data: rejectFlat });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
