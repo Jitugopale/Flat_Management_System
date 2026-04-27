@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import rootRouter from "./routes/index.js";
 dotenv.config();
 
 const app = express();
@@ -20,6 +21,8 @@ app.use(
 app.get("/", (req, res) => {
   res.send("Backend Running");
 });
+
+app.use("/api", rootRouter);
 
 app.listen(PORT, () => {
   console.log(`Server runing on PORT no ${PORT}`);
