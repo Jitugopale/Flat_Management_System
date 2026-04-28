@@ -122,3 +122,43 @@ export const getUserFlatsController = async (req, res) => {
 
   return res.status(200).json({ message: "Fetch Flats Sucessfully", flats });
 };
+
+export const markFlatSoldController= async(req,res)=>{
+    try {
+        const userId = req.user.id;
+        const flatId = Number(req.params.id);
+        const {sold_to_user_id} = req.body;
+
+        if(!sold_to_user_id){
+          return res.status(400).json({message:"buyerId is required"})
+        }
+
+        const flat = await prismaClient.flat.findFirst({
+            where:{id:flatId,user_id:userId}
+        })
+
+        if(!flat){
+            return res.status(404).json({message:"Flat not found or you are not owner"})
+        }
+
+        if(flat.status === "sold"){
+            return res.status(400).json({message:"Flat is already sold"})
+        }
+
+        const updatedFlat = await prismaClient.flat.update({
+            where:{id:flatId},
+            data:{
+                status:"sold",
+                sold_to_user_id:sold_to_user_id || null,
+                sold_date : new Date()
+            }
+        })
+
+        return res.status(200).json({
+            message:"Flat marked as sold sucessfully",
+            flat:updatedFlat
+        })
+    } catch (error) {
+        return res.status(500).json({message:"Something went wrong"})
+    }
+}

@@ -6,7 +6,7 @@ import fs from "fs"
 // path → helps create proper folder paths (works on all OS)
 // fs → file system module (used to create folders)
 import { authMiddleware } from "../middlewares/authMiddleware.js";
-import { createFlatController, getApprovedFlatsController, getUserFlatsController } from "../controllers/flatController.js";
+import { createFlatController, getApprovedFlatsController, getUserFlatsController, markFlatSoldController } from "../controllers/flatController.js";
 import { roleMiddleware } from "../middlewares/roleMiddleware.js";
 
 
@@ -67,7 +67,8 @@ flatRouter.post('/createFlat',authMiddleware,roleMiddleware("USER"),upload.array
   //└──────────┴─────────────────────────────────────────────┘
 
   flatRouter.get('/getApprove',getApprovedFlatsController);
-  flatRouter.get('/getFlats',authMiddleware,getUserFlatsController);
+  flatRouter.get('/getFlats',authMiddleware,roleMiddleware("USER"),getUserFlatsController);
+  flatRouter.put('/:id/sold',authMiddleware,roleMiddleware("USER"),markFlatSoldController)
 
 
 export default flatRouter;
