@@ -11,11 +11,13 @@ const Register = () => {
     const [phoneNo,setPhoneNo] = useState("");
     const [address,setAddress] = useState("");
     const [pincode,setPincode] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const [response,setResponse] = useState(null);
 
     const handleRegister = async(e)=>{
         e.preventDefault();
+        setLoading(true);
 
         try {
             const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`,{
@@ -37,6 +39,8 @@ const Register = () => {
             }
         } catch (error) {
             console.error("Registration Failed",error)
+        }finally{
+            setLoading(false);
         }
     }
   return (
@@ -77,7 +81,7 @@ const Register = () => {
                         value={pincode} onChange={(e)=>setPincode(e.target.value)}name='pincode' className='border border-gray-400 p-2 rounded'/>
                     </div>
 
-                    <button className='mt-3 border-2  w-full rounded-2xl' type='submit'>Submit</button>
+                    <button className='mt-3 border-2  w-full rounded-2xl cursor-pointer' type='submit' disabled={loading}>{loading ? "Processing..." : "Register"}</button>
                 </form>
 
                 <div className='mt-2'>
